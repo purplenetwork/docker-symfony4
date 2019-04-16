@@ -2,28 +2,22 @@
 ARG IMAGE
 ARG APP_PATH=.
 
-FROM webdevops/php-nginx:alpine-php7
+FROM purplenetworksrl/php
 
-RUN apk add --no-cache --upgrade php7-memcached
+# Add the source
+ONBUILD ADD --chown=application ${APP_PATH} /app
+ONBUILD RUN ls -la /app
+ONBUILD RUN rm -r /app/docker
 
-ARG COMPOSER_VERSION=1.8.5
+# Set the working directory
+ONBUILD WORKDIR /app
 
-RUN echo ${SYMFONY_ENV}
-RUN echo ${WEB_ALIAS_DOMAIN}
+ONBUILD ADD ./docker/build/symfony4/post_deploy_commands.sh /post_deploy_commands.sh
 
+ONBUILD RUN chmod -R a+rwX /app/public /app/var
 
-# TimeZone
-RUN rm /etc/localtime
-RUN ln -s /usr/share/zoneinfo/Europe/Rome /etc/localtime \
-    && echo Europe/Rome > /etc/timezone
-
-# Install composer
-RUN wget https://getcomposer.org/download/${COMPOSER_VERSION}/composer.phar
-RUN chmod +x composer.phar
-RUN mv composer.phar /usr/local/bin/composer
-
-# Add prestissimo
-RUN composer global require "hirak/prestissimo"
-
-#Set php.ini
-#RUN echo opcache.validate_timestamps = 0 >> /opt/docker/etc/php/php.ini
+# Download and run composer
+ONBUILD USER application
+ONBUILD RUN composer install --no-ansi --no-interaction --no-progress --optimize-autoloader --no-dev --no-scripts
+ONBUILD RUN bin/console assets:install --symlink --relative public
+ONBUILD RUN bin/console cache:warmup
