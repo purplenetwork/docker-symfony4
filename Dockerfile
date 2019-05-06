@@ -12,8 +12,6 @@ ONBUILD RUN rm -r /app/docker
 # Set the working directory
 ONBUILD WORKDIR /app
 
-ONBUILD ADD ./docker/build/symfony4/post_deploy_commands.sh /post_deploy_commands.sh
-
 ONBUILD RUN chmod -R a+rwX /app/public /app/var
 
 # Download and run composer
