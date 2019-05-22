@@ -1,5 +1,5 @@
 # Build arguments
-FROM purplenetworksrl/php:dev
+FROM purplenetworksrl/php-nginx:dev
 
 # Add the source
 ONBUILD ARG APP_PATH=.
