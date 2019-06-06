@@ -8,8 +8,3 @@ ONBUILD ADD --chown=application ${APP_PATH} /app
 
 # Set the working directory
 ONBUILD WORKDIR /app
-
-# Add WP CLI
-ONBUILD RUN curl -L https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -o wp
-ONBUILD RUN chmod a+x wp
-ONBUILD RUN mv wp /usr/local/bin/wp
